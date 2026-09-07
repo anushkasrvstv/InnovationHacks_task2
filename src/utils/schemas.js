@@ -1,0 +1,11 @@
+const { z } = require('zod');
+const id = z.string().min(1);
+const user = z.object({ username: z.string().min(1), role: z.string().min(1), avatarInitials: z.string().min(1).max(4), velocityPercent: z.number().min(0).max(100), activeTaskCount: z.number().int().min(0), completedTaskCount: z.number().int().min(0), checkoutToken: z.string().min(1) });
+const project = z.object({ name: z.string().min(1), branch: z.string().min(1), status: z.enum(['in-progress','done','review','blocked']), linesAdded: z.number().int().min(0), linesRemoved: z.number().int().min(0), progressPercent: z.number().min(0).max(100), techStack: z.array(z.string()), ownerIds: z.array(id), dueDate: z.string().min(1) });
+const task = z.object({ title: z.string().min(1), projectId: id, status: z.enum(['todo','in-progress','review','blocked','done']), priority: z.enum(['low','medium','high','critical']), assigneeId: id, createdAt: z.string().optional(), targetDate: z.string().min(1) });
+const focusStart = z.object({ userId: id, taskId: id });
+const sessionId = z.object({ sessionId: id });
+const statusPatch = z.preprocess(value => value ?? {}, z.object({ status: z.enum(['todo','in-progress','review','blocked','done']).optional() }).strict());
+const settings = z.object({ developerHandle: z.string().min(1), workspaceRoot: z.string().min(1), syncIntervalSeconds: z.number().int().positive(), enableGitStream: z.boolean(), telemetryReporting: z.boolean(), colorThemeAccent: z.string().min(1), editorKeybindings: z.string().min(1) });
+const statusQuery = z.object({ status: z.string().optional(), priority: z.string().optional(), projectId: z.string().optional(), sort: z.string().optional() });
+module.exports = { user, project, task, focusStart, sessionId, statusPatch, settings, statusQuery };
